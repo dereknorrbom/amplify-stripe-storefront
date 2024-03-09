@@ -10,6 +10,11 @@
       "StackName": "amplify-revvstripestorefront-main-05332",
       "StackId": "arn:aws:cloudformation:us-east-1:992382666797:stack/amplify-revvstripestorefront-main-05332/743093e0-ddaf-11ee-9dea-0e853effafe9",
       "AmplifyAppId": "d8wyilm4u9dan"
+    },
+    "categories": {
+      "auth": {
+        "revvstripestorefrontc582aeac": {}
+      }
     }
   },
   "dev": {
