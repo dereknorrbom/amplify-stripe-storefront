@@ -1,0 +1,37 @@
+type Product @model @auth(rules: [
+  { allow: owner, operations: [create, update, delete] }
+  { allow: public, operations: [read] }
+]) {
+  id: ID!
+  name: String!
+  description: String
+  price: Float!
+  sellerId: ID! @index(name: "bySeller")
+  seller: Seller @hasOne(fields: ["sellerId"])
+}
+
+type Seller @model @auth(rules: [
+  { allow: owner, operations: [create, update, delete] }
+  { allow: public, operations: [read] }
+]) {
+  id: ID!
+  name: String!
+  email: String!
+  stripeAccountId: String!
+  products: [Product!] @hasMany(indexName: "bySeller", fields: ["id"])
+}
+
+type Purchase @model @auth(rules: [
+  { allow: owner, operations: [read] }
+  { allow: private, operations: [create] }
+]) {
+  id: ID!
+  productId: ID!
+  product: Product @hasOne(fields: ["productId"])
+  buyer: String!
+  buyerEmail: String!
+  amount: Float!
+  fee: Float!
+  stripeChargeId: String!
+  createdAt: AWSDateTime!
+}

@@ -14,6 +14,9 @@
     "categories": {
       "auth": {
         "revvstripestorefrontc582aeac": {}
+      },
+      "api": {
+        "revvstripestorefront": {}
       }
     }
   },
