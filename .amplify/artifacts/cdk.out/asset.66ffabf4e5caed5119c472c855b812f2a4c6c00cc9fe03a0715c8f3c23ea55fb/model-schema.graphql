@@ -1,0 +1,43 @@
+type Product @model @auth(rules: [{allow: owner, ownerField: "owner"},
+  {allow: public, operations: [read]}])
+{
+  id: ID! @primaryKey
+  name: String
+  description: String
+  price: Float
+  seller: Seller @hasOne
+  productSellerId: ID
+  sellerProductsId: ID
+  owner: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type Seller @model @auth(rules: [{allow: owner, ownerField: "owner"},
+  {allow: public, operations: [read]}])
+{
+  id: ID! @primaryKey
+  name: String
+  email: String
+  stripeAccountId: String
+  products: [Product] @hasMany
+  owner: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type Purchase @model @auth(rules: [{allow: owner, operations: [read], ownerField: "owner"},
+  {allow: private, operations: [create]}])
+{
+  id: ID! @primaryKey
+  product: Product @hasOne
+  buyer: String
+  buyerEmail: String
+  amount: Float
+  fee: Float
+  stripeChargeId: String
+  createdAt: AWSDateTime
+  purchaseProductId: ID
+  owner: String
+  updatedAt: AWSDateTime!
+}

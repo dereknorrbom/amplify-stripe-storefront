@@ -4,7 +4,7 @@ import Navbar from "./components/Navbar";
 import "./globals.css";
 
 import { Amplify } from 'aws-amplify';
-import config from '../src/amplifyconfiguration.json';
+import config from '../amplifyconfiguration.json';
 Amplify.configure(config);
 
 const inter = Inter({ subsets: ["latin"] });

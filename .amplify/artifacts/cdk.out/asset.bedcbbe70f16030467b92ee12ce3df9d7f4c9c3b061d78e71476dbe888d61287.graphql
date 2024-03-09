@@ -1,0 +1,444 @@
+type Product @aws_cognito_user_pools @aws_api_key {
+  id: ID!
+  name: String
+  description: String
+  price: Float
+  seller: Seller
+  productSellerId: ID
+  sellerProductsId: ID
+  owner: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type Seller @aws_cognito_user_pools @aws_api_key {
+  id: ID!
+  name: String
+  email: String
+  stripeAccountId: String
+  products(filter: ModelProductFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelProductConnection
+  owner: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type Purchase @aws_cognito_user_pools {
+  id: ID!
+  product: Product
+  buyer: String
+  buyerEmail: String
+  amount: Float
+  fee: Float
+  stripeChargeId: String
+  createdAt: AWSDateTime
+  purchaseProductId: ID
+  owner: String
+  updatedAt: AWSDateTime!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelProductConnection @aws_api_key @aws_cognito_user_pools {
+  items: [Product]!
+  nextToken: String
+}
+
+input ModelProductFilterInput {
+  id: ModelIDInput
+  name: ModelStringInput
+  description: ModelStringInput
+  price: ModelFloatInput
+  productSellerId: ModelIDInput
+  sellerProductsId: ModelIDInput
+  owner: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelProductFilterInput]
+  or: [ModelProductFilterInput]
+  not: ModelProductFilterInput
+}
+
+type Query {
+  getProduct(id: ID!): Product @aws_api_key @aws_cognito_user_pools
+  listProducts(id: ID, filter: ModelProductFilterInput, limit: Int, nextToken: String, sortDirection: ModelSortDirection): ModelProductConnection @aws_api_key @aws_cognito_user_pools
+  getSeller(id: ID!): Seller @aws_api_key @aws_cognito_user_pools
+  listSellers(id: ID, filter: ModelSellerFilterInput, limit: Int, nextToken: String, sortDirection: ModelSortDirection): ModelSellerConnection @aws_api_key @aws_cognito_user_pools
+  getPurchase(id: ID!): Purchase @aws_cognito_user_pools
+  listPurchases(id: ID, filter: ModelPurchaseFilterInput, limit: Int, nextToken: String, sortDirection: ModelSortDirection): ModelPurchaseConnection @aws_cognito_user_pools
+}
+
+input ModelProductConditionInput {
+  name: ModelStringInput
+  description: ModelStringInput
+  price: ModelFloatInput
+  productSellerId: ModelIDInput
+  sellerProductsId: ModelIDInput
+  owner: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelProductConditionInput]
+  or: [ModelProductConditionInput]
+  not: ModelProductConditionInput
+}
+
+input CreateProductInput {
+  id: ID
+  name: String
+  description: String
+  price: Float
+  productSellerId: ID
+  sellerProductsId: ID
+  owner: String
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
+
+input UpdateProductInput {
+  id: ID!
+  name: String
+  description: String
+  price: Float
+  productSellerId: ID
+  sellerProductsId: ID
+  owner: String
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
+
+input DeleteProductInput {
+  id: ID!
+}
+
+type Mutation {
+  updatePurchase(input: UpdatePurchaseInput!, condition: ModelPurchaseConditionInput): Purchase
+  deletePurchase(input: DeletePurchaseInput!, condition: ModelPurchaseConditionInput): Purchase
+  createProduct(input: CreateProductInput!, condition: ModelProductConditionInput): Product @aws_cognito_user_pools
+  updateProduct(input: UpdateProductInput!, condition: ModelProductConditionInput): Product @aws_cognito_user_pools
+  deleteProduct(input: DeleteProductInput!, condition: ModelProductConditionInput): Product @aws_cognito_user_pools
+  createSeller(input: CreateSellerInput!, condition: ModelSellerConditionInput): Seller @aws_cognito_user_pools
+  updateSeller(input: UpdateSellerInput!, condition: ModelSellerConditionInput): Seller @aws_cognito_user_pools
+  deleteSeller(input: DeleteSellerInput!, condition: ModelSellerConditionInput): Seller @aws_cognito_user_pools
+  createPurchase(input: CreatePurchaseInput!, condition: ModelPurchaseConditionInput): Purchase @aws_cognito_user_pools
+}
+
+input ModelSubscriptionProductFilterInput {
+  id: ModelSubscriptionIDInput
+  name: ModelSubscriptionStringInput
+  description: ModelSubscriptionStringInput
+  price: ModelSubscriptionFloatInput
+  productSellerId: ModelSubscriptionIDInput
+  sellerProductsId: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionProductFilterInput]
+  or: [ModelSubscriptionProductFilterInput]
+  owner: ModelStringInput
+}
+
+type Subscription {
+  onCreateProduct(filter: ModelSubscriptionProductFilterInput, owner: String): Product @aws_subscribe(mutations: ["createProduct"]) @aws_api_key @aws_cognito_user_pools
+  onUpdateProduct(filter: ModelSubscriptionProductFilterInput, owner: String): Product @aws_subscribe(mutations: ["updateProduct"]) @aws_api_key @aws_cognito_user_pools
+  onDeleteProduct(filter: ModelSubscriptionProductFilterInput, owner: String): Product @aws_subscribe(mutations: ["deleteProduct"]) @aws_api_key @aws_cognito_user_pools
+  onCreateSeller(filter: ModelSubscriptionSellerFilterInput, owner: String): Seller @aws_subscribe(mutations: ["createSeller"]) @aws_api_key @aws_cognito_user_pools
+  onUpdateSeller(filter: ModelSubscriptionSellerFilterInput, owner: String): Seller @aws_subscribe(mutations: ["updateSeller"]) @aws_api_key @aws_cognito_user_pools
+  onDeleteSeller(filter: ModelSubscriptionSellerFilterInput, owner: String): Seller @aws_subscribe(mutations: ["deleteSeller"]) @aws_api_key @aws_cognito_user_pools
+  onCreatePurchase(filter: ModelSubscriptionPurchaseFilterInput, owner: String): Purchase @aws_subscribe(mutations: ["createPurchase"]) @aws_cognito_user_pools
+  onUpdatePurchase(filter: ModelSubscriptionPurchaseFilterInput, owner: String): Purchase @aws_subscribe(mutations: ["updatePurchase"]) @aws_cognito_user_pools
+  onDeletePurchase(filter: ModelSubscriptionPurchaseFilterInput, owner: String): Purchase @aws_subscribe(mutations: ["deletePurchase"]) @aws_cognito_user_pools
+}
+
+type ModelSellerConnection @aws_api_key @aws_cognito_user_pools {
+  items: [Seller]!
+  nextToken: String
+}
+
+input ModelSellerFilterInput {
+  id: ModelIDInput
+  name: ModelStringInput
+  email: ModelStringInput
+  stripeAccountId: ModelStringInput
+  owner: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelSellerFilterInput]
+  or: [ModelSellerFilterInput]
+  not: ModelSellerFilterInput
+}
+
+input ModelSellerConditionInput {
+  name: ModelStringInput
+  email: ModelStringInput
+  stripeAccountId: ModelStringInput
+  owner: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelSellerConditionInput]
+  or: [ModelSellerConditionInput]
+  not: ModelSellerConditionInput
+}
+
+input CreateSellerInput {
+  id: ID
+  name: String
+  email: String
+  stripeAccountId: String
+  owner: String
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
+
+input UpdateSellerInput {
+  id: ID!
+  name: String
+  email: String
+  stripeAccountId: String
+  owner: String
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
+
+input DeleteSellerInput {
+  id: ID!
+}
+
+input ModelSubscriptionSellerFilterInput {
+  id: ModelSubscriptionIDInput
+  name: ModelSubscriptionStringInput
+  email: ModelSubscriptionStringInput
+  stripeAccountId: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionSellerFilterInput]
+  or: [ModelSubscriptionSellerFilterInput]
+  sellerProductsId: ModelSubscriptionIDInput
+  owner: ModelStringInput
+}
+
+type ModelPurchaseConnection @aws_cognito_user_pools {
+  items: [Purchase]!
+  nextToken: String
+}
+
+input ModelPurchaseFilterInput {
+  id: ModelIDInput
+  buyer: ModelStringInput
+  buyerEmail: ModelStringInput
+  amount: ModelFloatInput
+  fee: ModelFloatInput
+  stripeChargeId: ModelStringInput
+  createdAt: ModelStringInput
+  purchaseProductId: ModelIDInput
+  owner: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelPurchaseFilterInput]
+  or: [ModelPurchaseFilterInput]
+  not: ModelPurchaseFilterInput
+}
+
+input ModelPurchaseConditionInput {
+  buyer: ModelStringInput
+  buyerEmail: ModelStringInput
+  amount: ModelFloatInput
+  fee: ModelFloatInput
+  stripeChargeId: ModelStringInput
+  createdAt: ModelStringInput
+  purchaseProductId: ModelIDInput
+  owner: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelPurchaseConditionInput]
+  or: [ModelPurchaseConditionInput]
+  not: ModelPurchaseConditionInput
+}
+
+input CreatePurchaseInput {
+  id: ID
+  buyer: String
+  buyerEmail: String
+  amount: Float
+  fee: Float
+  stripeChargeId: String
+  createdAt: AWSDateTime
+  purchaseProductId: ID
+  owner: String
+  updatedAt: AWSDateTime
+}
+
+input UpdatePurchaseInput {
+  id: ID!
+  buyer: String
+  buyerEmail: String
+  amount: Float
+  fee: Float
+  stripeChargeId: String
+  createdAt: AWSDateTime
+  purchaseProductId: ID
+  owner: String
+  updatedAt: AWSDateTime
+}
+
+input DeletePurchaseInput {
+  id: ID!
+}
+
+input ModelSubscriptionPurchaseFilterInput {
+  id: ModelSubscriptionIDInput
+  buyer: ModelSubscriptionStringInput
+  buyerEmail: ModelSubscriptionStringInput
+  amount: ModelSubscriptionFloatInput
+  fee: ModelSubscriptionFloatInput
+  stripeChargeId: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  purchaseProductId: ModelSubscriptionIDInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionPurchaseFilterInput]
+  or: [ModelSubscriptionPurchaseFilterInput]
+  owner: ModelStringInput
+}
