@@ -10,7 +10,7 @@ const schema = a.schema({
     })
     .authorization([
       a.allow.owner(), // Allow any authenticated user to create a product
-      a.allow.public().to(['read']) // Allow public read access to products
+      a.allow.public() // Allow public read access to products
     ]),
   
   Seller: a
