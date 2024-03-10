@@ -10,12 +10,14 @@
   },
   "dependencies": {
     "@aws-amplify/ui-react": "^6.1.5",
+    "@stripe/stripe-js": "^3.0.7",
     "amazon-cognito-identity-js": "^6.3.12",
     "aws-amplify": "^6.0.19",
     "aws-sdk": "^2.1574.0",
-    "next": "13.5.4",
+    "next": "^13.5.4",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "stripe": "^14.20.0"
   },
   "devDependencies": {
     "@aws-amplify/backend": "^0.13.0-beta.5",
