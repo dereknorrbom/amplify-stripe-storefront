@@ -5,10 +5,13 @@ const schema = a.schema({
     .model({
       name: a.string(),
       description: a.string(),
-      price: a.float(),
-      seller: a.hasOne('Seller'),
+      price: a.integer(),
+      seller: a.hasOne('Seller')
     })
-    .authorization([a.allow.owner(), a.allow.public().to(['read'])]),
+    .authorization([
+      a.allow.owner(), // Allow any authenticated user to create a product
+      a.allow.public().to(['read']) // Allow public read access to products
+    ]),
   
   Seller: a
     .model({
@@ -16,16 +19,18 @@ const schema = a.schema({
       email: a.string(),
       stripeAccountId: a.string(),
       products: a.hasMany('Product'),
+      createdAt: a.datetime(),
+      updatedAt: a.datetime(),
     })
-    .authorization([a.allow.owner(), a.allow.public().to(['read'])]),
+    .authorization([a.allow.public()]), // Allow public access for all operations
   
   Purchase: a
     .model({
       product: a.hasOne('Product'),
       buyer: a.string(),
       buyerEmail: a.string(),
-      amount: a.float(),
-      fee: a.float(),
+      amount: a.integer(),
+      fee: a.integer(),
       stripeChargeId: a.string(),
       createdAt: a.datetime(),
     })
@@ -43,7 +48,6 @@ export const data = defineData({
     },
   },
 });
-
 
 /*== STEP 2 ===============================================================
 Go to your frontend source code. From your client-side code, generate a
