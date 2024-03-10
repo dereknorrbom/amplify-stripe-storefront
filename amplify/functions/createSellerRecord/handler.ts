@@ -7,11 +7,15 @@ export const handler = async (event: any) => {
     const { sub: id, email } = event.request.userAttributes;
 
     const params = {
-      TableName: 'Seller-7v5may5tl5bulonzl23ui4akcy-NONE', // Replace with your DynamoDB table name
+      TableName: 'Seller-7v5may5tl5bulonzl23ui4akcy-NONE',
       Item: {
         id,
         email,
-        // Add other seller fields as needed
+        name: '', // Set an empty string as the initial value for the name field
+        stripeAccountId: '', // Add an empty string as the initial value
+        products: [], // Add an empty array as the initial value
+        createdAt: new Date().toISOString(), // Add the current timestamp
+        updatedAt: new Date().toISOString(), // Add the current timestamp
       },
     };
 
