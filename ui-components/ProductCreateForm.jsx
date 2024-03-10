@@ -1,10 +1,11 @@
 /* eslint-disable */
 "use client";
 import * as React from "react";
-import { Button, Flex, Grid, TextField } from "@aws-amplify/ui-react";
-import { fetchByPath, getOverrideProps, validateField } from "./utils";
+import { getCurrentUser } from 'aws-amplify/auth';
+import { fetchByPath, validateField } from "./utils";
 import { generateClient } from "aws-amplify/api";
 import { createProduct } from "./graphql/mutations";
+
 const client = generateClient();
 export default function ProductCreateForm(props) {
   const {
@@ -14,7 +15,6 @@ export default function ProductCreateForm(props) {
     onSubmit,
     onValidate,
     onChange,
-    overrides,
     ...rest
   } = props;
   const initialValues = {
@@ -24,12 +24,20 @@ export default function ProductCreateForm(props) {
     owner: "",
   };
   const [name, setName] = React.useState(initialValues.name);
-  const [description, setDescription] = React.useState(
-    initialValues.description
-  );
+  const [description, setDescription] = React.useState(initialValues.description);
   const [price, setPrice] = React.useState(initialValues.price);
   const [owner, setOwner] = React.useState(initialValues.owner);
   const [errors, setErrors] = React.useState({});
+
+  React.useEffect(() => {
+    const fetchUser = async () => {
+      const user = await getCurrentUser();
+      setOwner(user.username);
+    };
+
+    fetchUser();
+  }, []);
+
   const resetStateValues = () => {
     setName(initialValues.name);
     setDescription(initialValues.description);
@@ -37,21 +45,16 @@ export default function ProductCreateForm(props) {
     setOwner(initialValues.owner);
     setErrors({});
   };
+
   const validations = {
     name: [],
     description: [],
     price: [],
     owner: [],
   };
-  const runValidationTasks = async (
-    fieldName,
-    currentValue,
-    getDisplayValue
-  ) => {
-    const value =
-      currentValue && getDisplayValue
-        ? getDisplayValue(currentValue)
-        : currentValue;
+
+  const runValidationTasks = async (fieldName, currentValue, getDisplayValue) => {
+    const value = currentValue && getDisplayValue ? getDisplayValue(currentValue) : currentValue;
     let validationResponse = validateField(value, validations[fieldName]);
     const customValidator = fetchByPath(onValidate, fieldName);
     if (customValidator) {
@@ -60,12 +63,9 @@ export default function ProductCreateForm(props) {
     setErrors((errors) => ({ ...errors, [fieldName]: validationResponse }));
     return validationResponse;
   };
+
   return (
-    <Grid
-      as="form"
-      rowGap="15px"
-      columnGap="15px"
-      padding="20px"
+    <form
       onSubmit={async (event) => {
         event.preventDefault();
         let modelFields = {
@@ -77,16 +77,10 @@ export default function ProductCreateForm(props) {
         const validationResponses = await Promise.all(
           Object.keys(validations).reduce((promises, fieldName) => {
             if (Array.isArray(modelFields[fieldName])) {
-              promises.push(
-                ...modelFields[fieldName].map((item) =>
-                  runValidationTasks(fieldName, item)
-                )
-              );
+              promises.push(...modelFields[fieldName].map((item) => runValidationTasks(fieldName, item)));
               return promises;
             }
-            promises.push(
-              runValidationTasks(fieldName, modelFields[fieldName])
-            );
+            promises.push(runValidationTasks(fieldName, modelFields[fieldName]));
             return promises;
           }, [])
         );
@@ -123,147 +117,121 @@ export default function ProductCreateForm(props) {
           }
         }
       }}
-      {...getOverrideProps(overrides, "ProductCreateForm")}
       {...rest}
     >
-      <TextField
-        label="Name"
-        isRequired={false}
-        isReadOnly={false}
-        value={name}
-        onChange={(e) => {
-          let { value } = e.target;
-          if (onChange) {
-            const modelFields = {
-              name: value,
-              description,
-              price,
-              owner,
-            };
-            const result = onChange(modelFields);
-            value = result?.name ?? value;
-          }
-          if (errors.name?.hasError) {
-            runValidationTasks("name", value);
-          }
-          setName(value);
-        }}
-        onBlur={() => runValidationTasks("name", name)}
-        errorMessage={errors.name?.errorMessage}
-        hasError={errors.name?.hasError}
-        {...getOverrideProps(overrides, "name")}
-      ></TextField>
-      <TextField
-        label="Description"
-        isRequired={false}
-        isReadOnly={false}
-        value={description}
-        onChange={(e) => {
-          let { value } = e.target;
-          if (onChange) {
-            const modelFields = {
-              name,
-              description: value,
-              price,
-              owner,
-            };
-            const result = onChange(modelFields);
-            value = result?.description ?? value;
-          }
-          if (errors.description?.hasError) {
-            runValidationTasks("description", value);
-          }
-          setDescription(value);
-        }}
-        onBlur={() => runValidationTasks("description", description)}
-        errorMessage={errors.description?.errorMessage}
-        hasError={errors.description?.hasError}
-        {...getOverrideProps(overrides, "description")}
-      ></TextField>
-      <TextField
-        label="Price"
-        isRequired={false}
-        isReadOnly={false}
-        type="number"
-        step="any"
-        value={price}
-        onChange={(e) => {
-          let value = isNaN(parseInt(e.target.value))
-            ? e.target.value
-            : parseInt(e.target.value);
-          if (onChange) {
-            const modelFields = {
-              name,
-              description,
-              price: value,
-              owner,
-            };
-            const result = onChange(modelFields);
-            value = result?.price ?? value;
-          }
-          if (errors.price?.hasError) {
-            runValidationTasks("price", value);
-          }
-          setPrice(value);
-        }}
-        onBlur={() => runValidationTasks("price", price)}
-        errorMessage={errors.price?.errorMessage}
-        hasError={errors.price?.hasError}
-        {...getOverrideProps(overrides, "price")}
-      ></TextField>
-      <TextField
-        label="Owner"
-        isRequired={false}
-        isReadOnly={false}
-        value={owner}
-        onChange={(e) => {
-          let { value } = e.target;
-          if (onChange) {
-            const modelFields = {
-              name,
-              description,
-              price,
-              owner: value,
-            };
-            const result = onChange(modelFields);
-            value = result?.owner ?? value;
-          }
-          if (errors.owner?.hasError) {
-            runValidationTasks("owner", value);
-          }
-          setOwner(value);
-        }}
-        onBlur={() => runValidationTasks("owner", owner)}
-        errorMessage={errors.owner?.errorMessage}
-        hasError={errors.owner?.hasError}
-        {...getOverrideProps(overrides, "owner")}
-      ></TextField>
-      <Flex
-        justifyContent="space-between"
-        {...getOverrideProps(overrides, "CTAFlex")}
-      >
-        <Button
-          children="Clear"
+      <div className="mb-4">
+        <label htmlFor="name" className="block mb-1 font-semibold">Name</label>
+        <input
+          id="name"
+          type="text"
+          placeholder="Enter product name"
+          value={name}
+          onChange={(e) => {
+            let { value } = e.target;
+            if (onChange) {
+              const modelFields = {
+                name: value,
+                description,
+                price,
+                owner,
+              };
+              const result = onChange(modelFields);
+              value = result?.name ?? value;
+            }
+            if (errors.name?.hasError) {
+              runValidationTasks("name", value);
+            }
+            setName(value);
+          }}
+          onBlur={() => runValidationTasks("name", name)}
+          className={`border border-gray-300 rounded px-2 py-1 w-full ${errors.name?.hasError ? 'border-red-500' : ''}`}
+        />
+        {errors.name?.hasError && (
+          <p className="text-red-500 text-sm mt-1">{errors.name?.errorMessage}</p>
+        )}
+      </div>
+      <div className="mb-4">
+        <label htmlFor="description" className="block mb-1 font-semibold">Description</label>
+        <textarea
+          id="description"
+          placeholder="Enter product description"
+          value={description}
+          onChange={(e) => {
+            let { value } = e.target;
+            if (onChange) {
+              const modelFields = {
+                name,
+                description: value,
+                price,
+                owner,
+              };
+              const result = onChange(modelFields);
+              value = result?.description ?? value;
+            }
+            if (errors.description?.hasError) {
+              runValidationTasks("description", value);
+            }
+            setDescription(value);
+          }}
+          onBlur={() => runValidationTasks("description", description)}
+          className={`border border-gray-300 rounded px-2 py-1 w-full ${errors.description?.hasError ? 'border-red-500' : ''}`}
+          rows={4}
+        />
+        {errors.description?.hasError && (
+          <p className="text-red-500 text-sm mt-1">{errors.description?.errorMessage}</p>
+        )}
+      </div>
+      <div className="mb-4">
+        <label htmlFor="price" className="block mb-1 font-semibold">Price</label>
+        <input
+          id="price"
+          type="number"
+          step="0.01"
+          placeholder="Enter product price"
+          value={price}
+          onChange={(e) => {
+            let value = isNaN(parseFloat(e.target.value)) ? e.target.value : parseFloat(e.target.value);
+            if (onChange) {
+              const modelFields = {
+                name,
+                description,
+                price: value,
+                owner,
+              };
+              const result = onChange(modelFields);
+              value = result?.price ?? value;
+            }
+            if (errors.price?.hasError) {
+              runValidationTasks("price", value);
+            }
+            setPrice(value);
+          }}
+          onBlur={() => runValidationTasks("price", price)}
+          className={`border border-gray-300 rounded px-2 py-1 w-full ${errors.price?.hasError ? 'border-red-500' : ''}`}
+        />
+        {errors.price?.hasError && (
+          <p className="text-red-500 text-sm mt-1">{errors.price?.errorMessage}</p>
+        )}
+      </div>
+      <div className="flex justify-end gap-2">
+        <button
           type="reset"
           onClick={(event) => {
             event.preventDefault();
             resetStateValues();
           }}
-          {...getOverrideProps(overrides, "ClearButton")}
-        ></Button>
-        <Flex
-          gap="15px"
-          {...getOverrideProps(overrides, "RightAlignCTASubFlex")}
+          className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-1 px-4 rounded"
         >
-          <Button
-            children="Submit"
-            type="submit"
-            variation="primary"
-            isDisabled={Object.values(errors).some((e) => e?.hasError)}
-            {...getOverrideProps(overrides, "SubmitButton")}
-          ></Button>
-        </Flex>
-      </Flex>
-    </Grid>
+          Clear
+        </button>
+        <button
+          type="submit"
+          disabled={Object.values(errors).some((e) => e?.hasError)}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-1 px-4 rounded disabled:bg-gray-400"
+        >
+          Submit
+        </button>
+      </div>
+    </form>
   );
 }
