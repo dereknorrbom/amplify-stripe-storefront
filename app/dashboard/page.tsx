@@ -1,12 +1,15 @@
 "use client";
 import { Amplify } from 'aws-amplify';
-import { getCurrentUser } from 'aws-amplify/auth';
+import { getCurrentUser, fetchAuthSession } from 'aws-amplify/auth';
 import { Authenticator } from '@aws-amplify/ui-react';
 import { useState, useEffect } from 'react';
 import { generateClient } from 'aws-amplify/data';
 import { type Schema } from '@/amplify/data/resource';
 import { useRouter } from 'next/navigation';
 import { ProductCreateForm } from '@/ui-components';
+import { generateStripeConnectUrl } from '@/app/services/stripeConnect';
+// get current session import
+
 
 import config from '@/amplifyconfiguration.json';
 Amplify.configure(config);
@@ -40,38 +43,6 @@ const DashboardPage = () => {
 
     fetchSellerData();
   }, []);
-
-  const updateStripeAccountId = async (stripeAccountId: string, user: any) => {
-    try {
-      const { data: seller } = await client.models.Seller.get({ id: user.username });
-
-      if (seller) {
-        const updatedSeller = {
-          id: seller.id,
-          name: seller.name,
-          email: seller.email,
-          stripeAccountId,
-        };
-
-        const { data: updatedData, errors } = await client.models.Seller.update(updatedSeller);
-
-        if (errors) {
-          console.error('Error updating Stripe Account ID:', errors);
-        } else {
-          console.log('Stripe Account ID updated successfully:', updatedData);
-        }
-      } else {
-        console.error('Seller not found');
-      }
-    } catch (error) {
-      console.error('Error updating Stripe Account ID:', error);
-    }
-  };
-
-  const handleStripeIdSubmit = async (event: React.FormEvent<HTMLFormElement>, user: any) => {
-    event.preventDefault();
-    await updateStripeAccountId(stripeId, user);
-  };
 
   const fetchProducts = async (user: any) => {
     try {
@@ -131,6 +102,16 @@ const DashboardPage = () => {
     }
   };
 
+  const handleStripeConnect = async () => {
+    try {
+      const user = await getCurrentUser();
+      const stripeConnectUrl = await generateStripeConnectUrl();
+      window.location.href = `${stripeConnectUrl}&state=${user.username}`;
+    } catch (error) {
+      console.error('Error generating Stripe Connect URL:', error);
+    }
+  };
+
   useEffect(() => {
     const fetchUserDataAndProducts = async () => {
       const user = await getCurrentUser();
@@ -153,22 +134,18 @@ const DashboardPage = () => {
           <div className="container mx-auto px-4 py-8">
             <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
             <div className="mb-8">
-              <h2 className="text-xl font-bold mb-2">Update Stripe ID</h2>
-              <form onSubmit={(event) => handleStripeIdSubmit(event, user)} className="flex items-center">
-                <label htmlFor="stripeId" className="mr-2">Stripe ID:</label>
-                <input
-                  id="stripeId"
-                  type="text"
-                  value={stripeId}
-                  onChange={(e) => setStripeId(e.target.value)}
-                  className="border border-gray-300 rounded px-2 py-1 mr-2"
-                />
-                <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-4 rounded">
-                  Update
+              <h2 className="text-xl font-bold mb-2">Stripe Connect</h2>
+              {stripeId ? (
+                <p>Stripe account connected: {stripeId}</p>
+              ) : (
+                <button
+                  onClick={handleStripeConnect}
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  Connect Stripe
                 </button>
-              </form>
-            </div>
-            <div className="mb-8">
+              )}
+            </div>            <div className="mb-8">
               <h2 className="text-xl font-bold mb-2">Add Product</h2>
               <ProductCreateForm
                 onSuccess={handleProductCreated}
