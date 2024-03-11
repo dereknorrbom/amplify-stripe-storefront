@@ -1,17 +1,20 @@
-"use client"
+// app/products/[id]/page.tsx
+"use client";
 import { Amplify } from 'aws-amplify';
 import { useState, useEffect } from 'react';
 import { generateClient } from 'aws-amplify/data';
 import { type Schema } from "@/amplify/data/resource";
 import { useParams } from 'next/navigation';
+import { loadStripe } from '@stripe/stripe-js';
 
 import config from '@/amplifyconfiguration.json';
 Amplify.configure(config);
 
-const client = generateClient<Schema>()
+const client = generateClient<Schema>();
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 export default function ProductDetail() {
-  const [product, setProduct] = useState<{ name: string; description: string; price: number; id: string; } | null>(null);  
+  const [product, setProduct] = useState<{ name: string; description: string; price: number; id: string; } | null>(null);
 
   const { id } = useParams();
 
@@ -20,12 +23,12 @@ export default function ProductDetail() {
       try {
         if (typeof id === "string") {
           const productResponse = await client.models.Product.get({ id });
-          const product = productResponse.data; // Add this line to assign the product data
+          const product = productResponse.data;
           setProduct({
-            name: product?.name || '', // Ensure name is of type string
-            description: product?.description || '', // Provide default value for description
-            price: product?.price || 0, // Provide default value for price
-            id: product?.id || '' // Ensure id is of type string
+            name: product?.name || '',
+            description: product?.description || '',
+            price: product?.price || 0,
+            id: product?.id || ''
           });
         }
       } catch (error) {
@@ -37,15 +40,39 @@ export default function ProductDetail() {
   }, [id]);
 
   const handlePurchase = async () => {
-    // TODO: Implement Stripe checkout logic here
-    console.log('Purchasing product:', product);
+    if (!product) return;
+
+    try {
+      const stripe = await stripePromise;
+      const response = await fetch(process.env.NEXT_PUBLIC_CREATE_CHECKOUT_SESSION_URL!, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ product }),
+      });
+
+      if (response.ok) {
+        const { sessionId } = await response.json();
+        const result = await stripe!.redirectToCheckout({ sessionId });
+
+        if (result.error) {
+          console.error('Error redirecting to Stripe Checkout:', result.error);
+        }
+      } else {
+        console.error('Error creating Stripe Checkout session');
+      }
+    } catch (error) {
+      console.error('Error processing payment:', error);
+    }
   };
 
   if (!product) {
     return <div>Loading...</div>;
   }
 
-  return (    <main className="bg-gray-100 min-h-screen">
+  return (
+    <main className="bg-gray-100 min-h-screen">
       <div className="container mx-auto p-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
