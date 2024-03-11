@@ -7,7 +7,7 @@ import { generateClient } from 'aws-amplify/data';
 import { type Schema } from '@/amplify/data/resource';
 import { useRouter } from 'next/navigation';
 import { ProductCreateForm } from '@/ui-components';
-import { generateStripeConnectUrl } from '@/app/services/stripeConnect';
+import { generateStripeConnectUrl } from '../services/stripeConnect';
 // get current session import
 
 
