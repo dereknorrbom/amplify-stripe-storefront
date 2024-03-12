@@ -6,6 +6,7 @@ import { stripeConnectCallback } from './functions/stripeConnectCallback/resourc
 import { createCheckoutSession } from './functions/createCheckoutSession/resource.js';
 import { retrieveStripeAccountId } from './functions/retrieveStripeAccountId/resource.js';
 import { generateStripeConnectUrl } from './functions/generateStripeConnectUrl/resource.js';
+import { getPurchaseDetails } from './functions/getPurchaseDetails/resource.js';
 
 defineBackend({
   auth,
@@ -15,4 +16,5 @@ defineBackend({
   createCheckoutSession,
   retrieveStripeAccountId,
   generateStripeConnectUrl,
+  getPurchaseDetails
 });
