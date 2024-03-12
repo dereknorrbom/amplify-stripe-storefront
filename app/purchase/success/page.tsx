@@ -9,6 +9,8 @@ export default function PurchaseSuccessPage() {
   const [purchaseDetails, setPurchaseDetails] = useState<{
     paymentAmount: string;
     transactionId: string;
+    productPrice: string;
+    productName: string;
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -46,10 +48,26 @@ export default function PurchaseSuccessPage() {
   }
 
   return (
-    <div>
-      <h1>Thank you for your purchase!</h1>
-      <p>Payment Amount: ${purchaseDetails.paymentAmount}</p>
-      <p>Transaction ID: {purchaseDetails.transactionId}</p>
+    <div className="flex flex-grow items-center justify-center">
+      <div className="mx-auto p-4">
+        <h1 className="text-3xl font-bold mb-4">Thank you for your purchase!</h1>
+        <div className="mb-4">
+          <p className="text-lg font-semibold">Product Details:</p>
+          <p>Name: {purchaseDetails.productName}</p>
+          <p>Price: ${purchaseDetails.productPrice}</p>
+        </div>
+        <div className="mb-4">
+          <p className="text-lg font-semibold">Payment Details:</p>
+          <p>Payment Amount: ${purchaseDetails.paymentAmount}</p>
+          <p>Transaction ID: {purchaseDetails.transactionId}</p>
+        </div>
+        <a
+          href="/"
+          className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
+        >
+          Back to Home
+        </a>
+      </div>
     </div>
   );
 }

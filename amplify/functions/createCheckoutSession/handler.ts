@@ -34,6 +34,11 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         transfer_data: {
           destination: seller.stripeAccountId,
         },
+        metadata: {
+          productId: product.id,
+          productName: product.name,
+          productPrice: product.price.toFixed(2),
+        },
       },
     });
 

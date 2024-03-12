@@ -25,6 +25,9 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       body: JSON.stringify({
         paymentAmount: (paymentIntent.amount / 100).toFixed(2),
         transactionId: paymentIntent.id,
+        productId: paymentIntent.metadata.productId,
+        productName: paymentIntent.metadata.productName,
+        productPrice: paymentIntent.metadata.productPrice,
       }),
     };
   } catch (error) {
