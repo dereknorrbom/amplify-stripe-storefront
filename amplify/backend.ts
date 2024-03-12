@@ -7,6 +7,7 @@ import { createCheckoutSession } from './functions/createCheckoutSession/resourc
 import { retrieveStripeAccountId } from './functions/retrieveStripeAccountId/resource.js';
 import { generateStripeConnectUrl } from './functions/generateStripeConnectUrl/resource.js';
 import { getPurchaseDetails } from './functions/getPurchaseDetails/resource.js';
+import { sendPurchaseEmail } from './functions/sendPurchaseEmail/resource.js';
 
 defineBackend({
   auth,
@@ -16,5 +17,6 @@ defineBackend({
   createCheckoutSession,
   retrieveStripeAccountId,
   generateStripeConnectUrl,
-  getPurchaseDetails
+  getPurchaseDetails,
+  sendPurchaseEmail
 });
