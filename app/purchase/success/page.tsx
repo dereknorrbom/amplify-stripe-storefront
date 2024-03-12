@@ -1,7 +1,7 @@
 // app/purchase/success/page.tsx
 "use client";
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 export default function PurchaseSuccessPage() {
   const searchParams = useSearchParams();
@@ -13,6 +13,7 @@ export default function PurchaseSuccessPage() {
     productName: string;
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const fetchedRef = useRef(false);
 
   useEffect(() => {
     const fetchPurchaseDetails = async () => {
@@ -36,7 +37,10 @@ export default function PurchaseSuccessPage() {
       }
     };
 
-    fetchPurchaseDetails();
+    if (sessionId && !fetchedRef.current) {
+      fetchPurchaseDetails();
+      fetchedRef.current = true;
+    }
   }, [sessionId]);
 
   if (error) {
