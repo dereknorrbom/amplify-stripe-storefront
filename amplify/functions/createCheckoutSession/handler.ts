@@ -7,9 +7,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 export const handler: APIGatewayProxyHandler = async (event) => {
-
-  const product = JSON.parse(event.body!).product;
+  const { product, seller } = JSON.parse(event.body!);
   console.log('Product:', product);
+  console.log('Seller:', seller);
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -32,7 +32,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       payment_intent_data: {
         application_fee_amount: Math.round(product.price * 100 * 0.1),
         transfer_data: {
-          destination: 'acct_1OsuC0Cr7jHHDhqZ', // TODO: Replace with seller's Stripe account ID from database
+          destination: seller.stripeAccountId,
         },
       },
     });

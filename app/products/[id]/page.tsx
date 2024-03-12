@@ -14,7 +14,8 @@ const client = generateClient<Schema>();
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 export default function ProductDetail() {
-  const [product, setProduct] = useState<{ name: string; description: string; price: number; id: string; } | null>(null);
+  const [product, setProduct] = useState<{ name: string; description: string; price: number; id: string; owner: string; } | null>(null);
+  const [seller, setSeller] = useState<{ stripeAccountId: string } | null>(null);
 
   const { id } = useParams();
 
@@ -28,7 +29,8 @@ export default function ProductDetail() {
             name: product?.name || '',
             description: product?.description || '',
             price: product?.price || 0,
-            id: product?.id || ''
+            id: product?.id || '',
+            owner: product?.owner || '',
           });
         }
       } catch (error) {
@@ -39,8 +41,24 @@ export default function ProductDetail() {
     fetchProduct();
   }, [id]);
 
+  useEffect(() => {
+    const fetchSeller = async () => {
+      try {
+        if (product?.owner) {
+          const sellerResponse = await client.models.Seller.get({ id: product.owner });
+          const seller = sellerResponse.data;
+          setSeller({ stripeAccountId: seller?.stripeAccountId || '' });
+        }
+      } catch (error) {
+        console.error('Error fetching seller:', error);
+      }
+    };
+
+    fetchSeller();
+  }, [product]);
+
   const handlePurchase = async () => {
-    if (!product) return;
+    if (!product || !seller) return;
 
     try {
       const stripe = await stripePromise;
@@ -49,7 +67,7 @@ export default function ProductDetail() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ product }),
+        body: JSON.stringify({ product, seller }),
       });
 
       if (response.ok) {
