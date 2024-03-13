@@ -1,18 +1,38 @@
-// lib/stripeConnect.ts
+// services/stripeConnect.ts
+import { post } from 'aws-amplify/api';
+
 export const generateStripeConnectUrl = async () => {
-    const response = await fetch(process.env.NEXT_PUBLIC_GENERATE_STRIPE_CONNECT_URL!);
-    const { stripeConnectUrl } = await response.json();
-    return stripeConnectUrl;
+    try {
+        const operation = await post({
+        apiName: 'store-api',
+        path: '/api/generateStripeConnectUrl',
+        });
+        const responseData = await operation.response;
+        const json = (await responseData.body.json()) as {stripeConnectUrl: string};
+        return json.stripeConnectUrl;
+    } catch (error) {
+        console.error('Error generating Stripe Connect URL:', error);
+        throw error;
+    }
 };
 
 export const retrieveStripeAccountId = async (code: string) => {
-    const response = await fetch(process.env.NEXT_PUBLIC_RETRIEVE_STRIPE_ACCOUNT_ID_URL!, {
-        method: 'POST',
-        headers: {
+    try {
+        const operation = await post({
+        apiName: 'store-api',
+        path: '/api/retrieveStripeAccountId',
+        options: {
+            headers: {
             'Content-Type': 'application/json',
+            },
+            body: { code },
         },
-        body: JSON.stringify({ code }),
-    });
-    const { stripeAccountId } = await response.json();
-    return stripeAccountId;
+        });
+        const responseData = await operation.response;
+        const json = (await responseData.body.json()) as {stripeAccountId: string};
+        return json.stripeAccountId;
+    } catch (error) {
+        console.error('Error retrieving Stripe account ID:', error);
+        throw error;
+    }
 };

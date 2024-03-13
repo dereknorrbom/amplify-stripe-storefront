@@ -1,4 +1,4 @@
-// generateStripeConnectUrl/index.ts
+// generateStripeConnectUrl/handler.ts
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import Stripe from 'stripe';
 
@@ -21,6 +21,10 @@ export const handler: APIGatewayProxyHandler = async () => {
 
     return {
       statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({ stripeConnectUrl }),
     };
   } catch (error) {

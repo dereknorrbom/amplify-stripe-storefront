@@ -1,3 +1,4 @@
+// dashboard/page.tsx
 "use client";
 import { Amplify } from 'aws-amplify';
 import { getCurrentUser, fetchAuthSession } from 'aws-amplify/auth';
@@ -13,6 +14,24 @@ import { generateStripeConnectUrl } from '../services/stripeConnect';
 
 import config from '@/amplifyconfiguration.json';
 Amplify.configure(config);
+
+const existingConfig = Amplify.getConfig();
+
+const updatedConfig = {
+  ...existingConfig,
+  API: {
+    ...existingConfig.API, // Preserve existing API configurations (e.g., GraphQL)
+    REST: {
+      ...existingConfig.API?.REST, // Preserve existing REST configurations, if any
+      [config.custom.apiName]: {
+        endpoint: config.custom.apiEndpoint,
+        region: config.custom.apiRegion,
+      },
+    },
+  },
+};
+
+Amplify.configure(updatedConfig);
 
 const client = generateClient<Schema>();
 

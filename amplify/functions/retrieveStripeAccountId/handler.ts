@@ -1,4 +1,4 @@
-// retrieveStripeAccountId/index.ts
+// retrieveStripeAccountId/handler.ts
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import Stripe from 'stripe';
 
