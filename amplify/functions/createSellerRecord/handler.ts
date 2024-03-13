@@ -7,7 +7,7 @@ export const handler = async (event: any) => {
     const { sub: id, email } = event.request.userAttributes;
 
     const params = {
-      TableName: 'Seller-3pikmbbbznhw7ks5ixk2imnrxy-main', // Sandbox table name: Seller-jbyxwxjsfnbvxjag2mgx27cuii-NONE
+      TableName: 'Product-jbyxwxjsfnbvxjag2mgx27cuii-NONE', // Sandbox table name: Seller-jbyxwxjsfnbvxjag2mgx27cuii-NONE
       Item: {
         id,
         email,
