@@ -6,12 +6,33 @@ import { generateClient } from 'aws-amplify/data';
 import { type Schema } from "@/amplify/data/resource";
 import { useParams } from 'next/navigation';
 import { loadStripe } from '@stripe/stripe-js';
+import { put, get, post } from 'aws-amplify/api';
 
 import config from '@/amplifyconfiguration.json';
 Amplify.configure(config);
 
+const existingConfig = Amplify.getConfig();
+
+const updatedConfig = {
+  ...existingConfig,
+  API: {
+    ...existingConfig.API, // Preserve existing API configurations (e.g., GraphQL)
+    REST: {
+      ...existingConfig.API?.REST, // Preserve existing REST configurations, if any
+      [config.custom.apiName]: {
+        endpoint: config.custom.apiEndpoint,
+        region: config.custom.apiRegion,
+      },
+    },
+  },
+};
+
+Amplify.configure(updatedConfig);
+
 const client = generateClient<Schema>();
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+
+
 
 export default function ProductDetail() {
   const [product, setProduct] = useState<{ name: string; description: string; price: number; id: string; owner: string; } | null>(null);
@@ -84,18 +105,59 @@ export default function ProductDetail() {
       console.error('Error processing payment:', error);
     }
   };
-
+  interface CheckoutSessionResponse {
+    statusCode: number;
+    body: {
+      sessionId: string;
+    };
+  }
+  
+  const handlePurchaseWithApi = async () => {
+    if (!product || !seller) return;
+  
+    try {
+      const stripe = await stripePromise;
+  
+      const operation = await post({
+        apiName: 'store-api',
+        path: '/api/createCheckoutSession',
+        options: {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: { product, seller },
+        },
+      });
+      const responseData = await operation.response;
+      const json = (await responseData.body.json()) as { sessionId: string }; // Update the type of the json variable
+  
+      if (json) {
+        const result = await stripe!.redirectToCheckout({
+          sessionId: json.sessionId, // Access the sessionId property from the json object
+        });
+  
+        if (result.error) {
+          console.error('Error redirecting to Stripe Checkout:', result.error);
+        }
+      } else {
+        console.error('Error creating Stripe Checkout session');
+      }
+    } catch (error) {
+      console.error('Error processing payment:', error);
+    }
+  };
+  
   if (!product) {
     return <div>Loading...</div>;
   }
 
   return (
-    <main className="bg-gray-100 min-h-screen">
+    <main className="flex-grow min-h-screen">
       <div className="container mx-auto p-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
             {/* Replace with actual product image */}
-            <img src="https://picsum.photos/seed/picsum/600/400" alt={product.name} className="w-full h-auto rounded-lg shadow-md" />
+            <img src="https://revv-stripe-store.s3.amazonaws.com/60-400x300.jpg" alt={product.name} className="w-full h-auto rounded-lg shadow-md" />
           </div>
           <div>
             <h1 className="text-3xl font-bold mb-4 text-gray-800">{product.name}</h1>
@@ -104,7 +166,7 @@ export default function ProductDetail() {
               <span className="text-4xl font-bold text-gray-800">${product.price.toFixed(2)}</span>
             </div>
             <button
-              onClick={handlePurchase}
+              onClick={handlePurchaseWithApi}
               className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-8 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
               Purchase with Stripe
