@@ -26,7 +26,7 @@ export const handler = async (event: any) => {
     console.log('Stripe Account ID:', stripeAccountId);
 
     const params = {
-      TableName: 'Seller-7v5may5tl5bulonzl23ui4akcy-NONE',
+      TableName: 'Seller-3pikmbbbznhw7ks5ixk2imnrxy-main', // Sandbox table name: Seller-7v5may5tl5bulonzl23ui4akcy-NONE
       Key: { id: username },
       UpdateExpression: 'set stripeAccountId = :stripeAccountId',
       ExpressionAttributeValues: {
@@ -36,6 +36,8 @@ export const handler = async (event: any) => {
 
     await dynamoDb.update(params).promise();
     console.log('Updated seller:', username);
+    console.log('Redirecting to dashboard...');
+    console.log('Redirect URL:', `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard`);
 
     return {
       statusCode: 302,
