@@ -50,8 +50,12 @@ const proxy = api.root.addProxy({ anyMethod:false });
 const apiResource = api.root.addResource('api');
 const sendPurchaseEmailEndpoint = apiResource.addResource('sendPurchaseEmail');
 const createCheckoutSessionEndpoint = apiResource.addResource('createCheckoutSession');
+const getPurchaseDetailsEndpoint = apiResource.addResource('getPurchaseDetails');
+const stripeConnectCallbackEndpoint = apiResource.addResource('stripeConnectCallback');
+const generateStripeConnectUrlEndpoint = apiResource.addResource('generateStripeConnectUrl');
+const retrieveStripeAccountIdEndpoint = apiResource.addResource('retrieveStripeAccountId');
 
-const apiPaths = [proxy, apiResource, sendPurchaseEmailEndpoint, createCheckoutSessionEndpoint];
+const apiPaths = [proxy, apiResource, sendPurchaseEmailEndpoint, createCheckoutSessionEndpoint, getPurchaseDetailsEndpoint, stripeConnectCallbackEndpoint, generateStripeConnectUrlEndpoint, retrieveStripeAccountIdEndpoint];
 
 // add cors to all paths
 apiPaths.forEach(path => {
@@ -61,6 +65,10 @@ apiPaths.forEach(path => {
 apiGetMethod( sendPurchaseEmailEndpoint, backend.sendPurchaseEmail.resources.lambda, apiGatewayRole);
 apiGetMethod( apiResource, backend.sendPurchaseEmail.resources.lambda, apiGatewayRole);
 apiGetMethod( createCheckoutSessionEndpoint, backend.createCheckoutSession.resources.lambda, apiGatewayRole);
+apiGetMethod( stripeConnectCallbackEndpoint, backend.stripeConnectCallback.resources.lambda, apiGatewayRole);
+apiGetMethod( generateStripeConnectUrlEndpoint, backend.generateStripeConnectUrl.resources.lambda, apiGatewayRole);
+apiGetMethod( retrieveStripeAccountIdEndpoint, backend.retrieveStripeAccountId.resources.lambda, apiGatewayRole);
+
 
 export function apiGetMethod(apiResource: apigateway.IResource, lambdaFunction: lambda.IFunction, apiGetRole: iam.IRole) {
   const integrationOptions: apigateway.IntegrationOptions = {
