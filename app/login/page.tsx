@@ -25,18 +25,16 @@ export default function LoginPage() {
   }, [user, router]);
 
   return (
-    <Authenticator>
-      {({ signOut, user: authUser }) => {
-        setUser(authUser as User); // Cast authUser to the custom User type
-        return (
-          <>
-            <main>
-              <h1>Hello {user?.signInDetails.loginId}</h1>
-              <button onClick={signOut}>Sign out</button>
-            </main>
-          </>
-        );
-      }}
-    </Authenticator>
+    <main className="min-h-screen flex-grow">
+      <Authenticator>
+        {({ signOut, user: authUser }) => {
+          setUser(authUser as User); // Cast authUser to the custom User type
+          return (
+            <>
+            </>
+          );
+        }}
+      </Authenticator>
+    </main>
   );
 }

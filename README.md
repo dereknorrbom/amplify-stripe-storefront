@@ -103,7 +103,7 @@ The application integrates with Stripe to handle payment processing and seller o
 
 - **Payment Processing:** When a buyer completes a payment through Stripe Checkout, the `getPurchaseDetails` Lambda function is invoked to retrieve the purchase details, including the payment amount, transaction ID, and associated product information. The `sendPurchaseEmail` Lambda function is then triggered to send a confirmation email to the buyer.
 
-- **Seller Payouts:** The application supports seller payouts by transferring funds from the buyer to the seller's connected Stripe account. The `createCheckoutSession` Lambda function includes the necessary configuration to split the payment between the platform and the seller, applying a platform fee if applicable.
+- **Seller Payouts:** The application supports seller payouts by transferring funds from the buyer to the seller's connected Stripe account. The `createCheckoutSession` Lambda function includes the necessary configuration to split the payment between the platform and the seller, applying a platform fee of 10%.
 
 ## GraphQL Schema
 

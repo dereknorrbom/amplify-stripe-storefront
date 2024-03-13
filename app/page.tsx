@@ -6,7 +6,7 @@ import { type Schema } from "@/amplify/data/resource";
 import Link from 'next/link';
 
 import config from '@/amplifyconfiguration.json';
-Amplify.configure(config);
+Amplify.configure(config, { ssr: true });
 
 const client = generateClient<Schema>()
 
@@ -30,7 +30,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="bg-gray-100 min-h-screen">
+    <main className="min-h-screen flex-grow">
       <div className="container mx-auto p-4">
         <h1 className="text-4xl font-bold mb-8 text-center text-gray-800">All Products</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
@@ -38,7 +38,7 @@ export default function Home() {
             <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="relative">
                 {/* Replace with actual product image */}
-                <img src="https://picsum.photos/seed/2/400/300" alt={product.name} className="w-full h-48 object-cover" />
+                <img src="https://revv-stripe-store.s3.amazonaws.com/60-400x300.jpg" alt={product.name} className="w-full h-48 object-cover" />
                 <div className="absolute top-0 right-0 bg-yellow-500 text-white px-2 py-1 m-2 rounded-md text-sm font-semibold uppercase tracking-wide">
                   New
                 </div>

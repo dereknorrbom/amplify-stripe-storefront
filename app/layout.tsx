@@ -29,11 +29,10 @@ export default function RootLayout({
         <header className="bg-red-600 text-white p-4 text-xl">
           <Navbar />
         </header>
-        <main className="flex-grow p-4">
+        <main className="flex flex-grow p-4">
           {children}
         </main>
-        <footer className="bg-gray-200 p-4 text-sm text-black text-center">
-          Footer Content
+        <footer className="p-4 text-sm text-black text-center">
         </footer>
       </body>
     </html>
