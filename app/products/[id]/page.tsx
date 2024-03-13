@@ -118,7 +118,7 @@ export default function ProductDetail() {
   
       const operation = await post({
         apiName: 'store-api',
-        path: '/api/createCheckoutSession',
+        path: 'api/createCheckoutSession',
         options: {
           headers: {
             'Content-Type': 'application/json',
