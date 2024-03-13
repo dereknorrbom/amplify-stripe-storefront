@@ -15,7 +15,7 @@ export const handler: APIGatewayProxyHandler = async () => {
       client_id: process.env.STRIPE_CLIENT_ID!,
       response_type: 'code',
       scope: 'read_write',
-      redirect_uri: process.env.STRIPE_REDIRECT_URI!,
+      redirect_uri: process.env.STRIPE_CONNECT_CALLBACK_URL!,
     });
     console.log('Stripe Connect URL generated:', stripeConnectUrl);
 
