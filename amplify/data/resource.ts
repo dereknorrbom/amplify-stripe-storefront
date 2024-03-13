@@ -33,8 +33,10 @@ const schema = a.schema({
       fee: a.integer(),
       stripeChargeId: a.string(),
       createdAt: a.datetime(),
+      emailSent: a.boolean(),
     })
     .authorization([a.allow.owner().to(['read']), a.allow.private().to(['create'])]),
+
 });
 
 export type Schema = ClientSchema<typeof schema>;
