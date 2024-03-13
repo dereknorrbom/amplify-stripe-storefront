@@ -1,3 +1,4 @@
+// app/login/page.tsx
 'use client';
 import { Amplify } from 'aws-amplify';
 import { Authenticator } from '@aws-amplify/ui-react';
@@ -6,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
 import config from '@/amplifyconfiguration.json';
-Amplify.configure(config);
+Amplify.configure(config, { ssr: true });
 
 type User = {
   signInDetails: {

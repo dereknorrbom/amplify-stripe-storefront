@@ -13,7 +13,7 @@ import { generateStripeConnectUrl } from '../services/stripeConnect';
 
 
 import config from '@/amplifyconfiguration.json';
-Amplify.configure(config);
+Amplify.configure(config, { ssr: true });
 
 const existingConfig = Amplify.getConfig();
 
@@ -31,7 +31,7 @@ const updatedConfig = {
   },
 };
 
-Amplify.configure(updatedConfig);
+Amplify.configure(updatedConfig, { ssr: true });
 
 const client = generateClient<Schema>();
 
