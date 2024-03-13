@@ -35,10 +35,15 @@ export const handler: Handler = async (event) => {
     Source: 'dereknorrbom+ses@gmail.com',
   };
 
+
   try {
     await ses.sendEmail(params).promise();
     return {
       statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*', // Allow requests from any origin
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({ message: 'Email sent successfully' }),
     };
   } catch (error) {

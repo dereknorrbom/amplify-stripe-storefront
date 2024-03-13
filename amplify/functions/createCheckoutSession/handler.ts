@@ -44,6 +44,10 @@ export const handler: APIGatewayProxyHandler = async (event) => {
 
     return {
       statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*', // Allow requests from any origin
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({ sessionId: session.id }),
     };
   } catch (error) {
