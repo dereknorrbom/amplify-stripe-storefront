@@ -1,4 +1,4 @@
-import { handler } from './handler';
+import { handler } from '../../amplify/functions/retrieveStripeAccountId/handler';
 import { Context } from 'aws-lambda';
 import { APIGatewayProxyResult } from 'aws-lambda';
 

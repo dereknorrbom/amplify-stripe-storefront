@@ -1,4 +1,4 @@
-import { handler } from './handler';
+import { handler } from '../../amplify/functions/sendPurchaseEmail/handler';
 import { SES } from 'aws-sdk';
 import { Context } from 'aws-lambda';
 

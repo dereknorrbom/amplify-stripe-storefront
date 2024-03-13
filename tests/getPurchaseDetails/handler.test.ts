@@ -1,6 +1,4 @@
-import { handler } from './handler';
-import Stripe from 'stripe';
-import { Lambda, DynamoDB } from 'aws-sdk';
+import { handler } from '../../amplify/functions/getPurchaseDetails/handler';
 import { APIGatewayProxyResult } from 'aws-lambda';
 
 jest.mock('stripe', () => {
@@ -85,5 +83,4 @@ describe('getPurchaseDetails Lambda Function', () => {
     expect(body.error).toEqual('Missing session ID');
   });
 
-  // Additional tests for error handling, etc.
 });

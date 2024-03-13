@@ -1,4 +1,4 @@
-import { handler } from './handler'; // Import your handler
+import { handler } from '../../amplify/functions/stripeConnectCallback/handler';
 import Stripe from 'stripe';
 import AWSMock from 'aws-sdk-mock';
 import AWS from 'aws-sdk';
