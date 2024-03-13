@@ -5,6 +5,8 @@ import { aws_lambda as lambda, aws_apigateway as apigateway, aws_iam as iam } fr
 
 import { auth } from './auth/resource.js';
 import { data } from './data/resource.js';
+
+// Lambda Functions
 import { createSellerRecord } from './functions/createSellerRecord/resource.js';
 import { stripeConnectCallback } from './functions/stripeConnectCallback/resource.js';
 import { createCheckoutSession } from './functions/createCheckoutSession/resource.js';

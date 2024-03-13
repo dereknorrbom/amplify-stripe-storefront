@@ -32,8 +32,6 @@ Amplify.configure(updatedConfig);
 const client = generateClient<Schema>();
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
-
-
 export default function ProductDetail() {
   const [product, setProduct] = useState<{ name: string; description: string; price: number; id: string; owner: string; } | null>(null);
   const [seller, setSeller] = useState<{ stripeAccountId: string } | null>(null);
