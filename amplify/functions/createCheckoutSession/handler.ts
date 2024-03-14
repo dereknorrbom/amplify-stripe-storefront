@@ -18,7 +18,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         {
           price_data: {
             currency: 'usd',
-            unit_amount: product.price * 100,
+            unit_amount: product.price,
             product_data: {
               name: product.name,
             },
@@ -30,7 +30,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/purchase/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/purchase/cancel`,
       payment_intent_data: {
-        application_fee_amount: Math.round(product.price * 100 * 0.1),
+        application_fee_amount: Math.round(product.price * 0.1),
         transfer_data: {
           destination: seller.stripeAccountId,
         },
