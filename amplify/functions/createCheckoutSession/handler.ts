@@ -18,7 +18,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         {
           price_data: {
             currency: 'usd',
-            unit_amount: product.price,
+            unit_amount: product.price, // Stripe expects the price in cents
             product_data: {
               name: product.name,
             },
@@ -37,7 +37,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         metadata: {
           productId: product.id,
           productName: product.name,
-          productPrice: product.price.toFixed(2),
+          productPrice: product.price,
         },
       },
     });
