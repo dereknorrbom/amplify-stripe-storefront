@@ -34,7 +34,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     // Check if a purchase record already exists for the given transaction ID
     const existingPurchase = await dynamoDb
       .get({
-        TableName: 'Purchase-7v5may5tl5bulonzl23ui4akcy-NONE',
+        TableName: 'Purchase-jbyxwxjsfnbvxjag2mgx27cuii-NONE',
         Key: { id: paymentIntent.id },
       })
       .promise();
@@ -55,7 +55,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
 
       await dynamoDb
         .put({
-          TableName: 'Purchase-7v5may5tl5bulonzl23ui4akcy-NONE',
+          TableName: 'Purchase-jbyxwxjsfnbvxjag2mgx27cuii-NONE',
           Item: purchase,
         })
         .promise();
@@ -74,7 +74,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       // Update the purchase record to set emailSent to true
       await dynamoDb
         .update({
-          TableName: 'Purchase-7v5may5tl5bulonzl23ui4akcy-NONE',
+          TableName: 'Purchase-jbyxwxjsfnbvxjag2mgx27cuii-NONE',
           Key: { id: paymentIntent.id },
           UpdateExpression: 'set emailSent = :emailSent',
           ExpressionAttributeValues: { ':emailSent': true },

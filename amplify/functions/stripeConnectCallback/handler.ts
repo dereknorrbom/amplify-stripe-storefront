@@ -26,7 +26,7 @@ export const handler = async (event: any) => {
     console.log('Stripe Account ID:', stripeAccountId);
 
     const params = {
-      TableName: 'Seller-7v5may5tl5bulonzl23ui4akcy-NONE',
+      TableName: 'Seller-jbyxwxjsfnbvxjag2mgx27cuii-NONE',
       Key: { id: username },
       UpdateExpression: 'set stripeAccountId = :stripeAccountId',
       ExpressionAttributeValues: {
