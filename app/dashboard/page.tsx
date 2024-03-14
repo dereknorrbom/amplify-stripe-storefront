@@ -13,25 +13,21 @@ import { generateStripeConnectUrl } from '../services/stripeConnect';
 
 
 import config from '@/amplifyconfiguration.json';
-Amplify.configure(config, { ssr: true });
+Amplify.configure(config); // <=== Initialize Amplify with the exports config
+const existingConfig = Amplify.getConfig(); // <=== the initialized config should now be returned to existingConfig
 
-const existingConfig = Amplify.getConfig();
-
-const updatedConfig = {
+Amplify.configure({
   ...existingConfig,
   API: {
-    ...existingConfig.API, // Preserve existing API configurations (e.g., GraphQL)
+    ...existingConfig.API,
     REST: {
-      ...existingConfig.API?.REST, // Preserve existing REST configurations, if any
       [config.custom.apiName]: {
         endpoint: config.custom.apiEndpoint,
         region: config.custom.apiRegion,
       },
     },
   },
-};
-
-Amplify.configure(updatedConfig, { ssr: true });
+}, { ssr: true });
 
 const client = generateClient<Schema>();
 
