@@ -151,7 +151,7 @@ const DashboardPage = () => {
             <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
             <div className="mb-10">
               <h2 className="text-xl font-semibold mb-3">Stripe Connect</h2>
-              <div className="p-4 border border-gray-300 rounded-lg mb-6">
+              <div className="bg-gray-100 p-4 border border-gray-300 rounded-lg mb-6">
                 {stripeId ? (
                   <p className="text-lg">Stripe account connected: <span className="font-semibold">{stripeId}</span></p>
                 ) : (
@@ -165,7 +165,7 @@ const DashboardPage = () => {
               </div>
               <div className="mb-10">
                 <h2 className="text-xl font-semibold mb-3">Add Product</h2>
-                <div className="p-4 border border-gray-300 rounded-lg">
+                <div className="bg-gray-100 p-4 border border-gray-300 rounded-lg">
                   <ProductCreateForm
                     onSuccess={handleProductCreated}
                     onError={handleProductCreateError}
@@ -176,7 +176,7 @@ const DashboardPage = () => {
                 <h2 className="text-xl font-semibold mb-3">Products</h2>
                 <ul className="space-y-4">
                   {products.map((product) => (
-                    <li key={product.id} className="p-4 border border-gray-300 rounded-lg">
+                    <li key={product.id} className="bg-gray-100 p-4 border border-gray-300 rounded-lg">
                       {editingProductId === product.id ? (
                         <div className="flex items-center space-x-3">
                           <input
@@ -228,29 +228,30 @@ const DashboardPage = () => {
                               setEditingProductId(null);
                               setEditingPrice(''); // Reset editing price
                             }}
-                            className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1 px-2 rounded"
+                            className="bg-red-500 hover:bg-gray-700 text-white font-bold py-1 px-2 rounded"
                           >
                             Cancel
                           </button>
                         </div>
                       ) : (
-                        <div className="flex items-center justify-between">
-                          <div>
+                        <div className="flex flex-col sm:flex-row items-center">
+                          <div className="w-full sm:w-auto sm:flex-1 px-2 mb-2 sm:mb-0">
                             <span className="font-semibold">Name:</span> {product.name}
                           </div>
-                          <div>
-                            <span className="font-semibold">Description:</span> {product.description}
+                          <div className="w-full sm:w-auto sm:flex-1 px-2 mb-2 sm:mb-0 text-ellipsis overflow-hidden">
+                            <span className="font-semibold">Description:</span>
+                            <span className="truncate">{product.description}</span>
                           </div>
-                          <div>
+                          <div className="w-full sm:w-auto sm:flex-none px-2 mb-2 sm:mb-0">
                             <span className="font-semibold">Price:</span> ${(product.price / 100).toFixed(2)}
                           </div>
-                          <div className="flex items-center space-x-2">
+                          <div className="w-full sm:w-auto sm:flex-none px-2 flex justify-between sm:justify-end">
                             <button
                               onClick={() => {
                                 setEditingProductId(product.id);
                                 setEditingPrice((product.price / 100).toFixed(2));
                               }}
-                              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+                              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded mb-2 sm:mb-0 sm:mr-2"
                             >
                               Edit
                             </button>

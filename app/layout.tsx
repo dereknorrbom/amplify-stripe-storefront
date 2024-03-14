@@ -32,8 +32,8 @@ export default function RootLayout({
         <main className="flex-grow p-4">
           {children}
         </main>
-        <footer className="bg-gray-200 p-4 text-sm text-black text-center">
-          Footer Content
+        <footer className="bg-gray-100 p-4 text-sm text-black text-center">
+          <p>&copy; {new Date().getFullYear()} Derek Norrbom</p>
         </footer>
       </body>
     </html>
