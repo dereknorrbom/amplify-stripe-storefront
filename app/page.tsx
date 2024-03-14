@@ -8,12 +8,12 @@ import Link from 'next/link';
 import config from '@/amplifyconfiguration.json';
 Amplify.configure(config, { ssr: true });
 
-const client = generateClient<Schema>()
 
 export default function Home() {
   const [products, setProducts] = useState<{ name: string; description: string; price: number; id: string; }[]>([]);
 
   useEffect(() => {
+    const client = generateClient<Schema>()
     const fetchAllProducts = async () => {
       try {
         const { data: products } = await client.models.Product.list();

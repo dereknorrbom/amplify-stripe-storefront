@@ -11,25 +11,6 @@ import { put, get, post } from 'aws-amplify/api';
 import config from '@/amplifyconfiguration.json';
 Amplify.configure(config, { ssr: true });
 
-const existingConfig = Amplify.getConfig();
-
-const updatedConfig = {
-  ...existingConfig,
-  API: {
-    ...existingConfig.API, // Preserve existing API configurations (e.g., GraphQL)
-    REST: {
-      ...existingConfig.API?.REST, // Preserve existing REST configurations, if any
-      [config.custom.apiName]: {
-        endpoint: config.custom.apiEndpoint,
-        region: config.custom.apiRegion,
-      },
-    },
-  },
-};
-
-Amplify.configure(updatedConfig, { ssr: true });
-
-const client = generateClient<Schema>();
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 export default function ProductDetail() {
@@ -39,6 +20,7 @@ export default function ProductDetail() {
   const { id } = useParams();
 
   useEffect(() => {
+    const client = generateClient<Schema>();
     const fetchProduct = async () => {
       try {
         if (typeof id === "string") {
@@ -61,6 +43,7 @@ export default function ProductDetail() {
   }, [id]);
 
   useEffect(() => {
+    const client = generateClient<Schema>();
     const fetchSeller = async () => {
       try {
         if (product?.owner) {
@@ -75,34 +58,6 @@ export default function ProductDetail() {
 
     fetchSeller();
   }, [product]);
-
-  const handlePurchase = async () => {
-    if (!product || !seller) return;
-
-    try {
-      const stripe = await stripePromise;
-      const response = await fetch(process.env.NEXT_PUBLIC_CREATE_CHECKOUT_SESSION_URL!, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ product, seller }),
-      });
-
-      if (response.ok) {
-        const { sessionId } = await response.json();
-        const result = await stripe!.redirectToCheckout({ sessionId });
-
-        if (result.error) {
-          console.error('Error redirecting to Stripe Checkout:', result.error);
-        }
-      } else {
-        console.error('Error creating Stripe Checkout session');
-      }
-    } catch (error) {
-      console.error('Error processing payment:', error);
-    }
-  };
   interface CheckoutSessionResponse {
     statusCode: number;
     body: {
