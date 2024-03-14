@@ -1,3 +1,4 @@
+// /app/login/page.tsx
 'use client';
 import { Amplify } from 'aws-amplify';
 import { Authenticator } from '@aws-amplify/ui-react';
