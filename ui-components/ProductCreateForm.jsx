@@ -228,7 +228,7 @@ export default function ProductCreateForm(props) {
           <p className="text-red-500 text-sm mt-1">{errors.price?.errorMessage}</p>
         )}
       </div>
-      <div className="flex justify-end gap-2">
+      <div className="flex justify-end space-x-2">
         <button
           type="reset"
           onClick={(event) => {
