@@ -11,7 +11,6 @@ import { ProductCreateForm } from '@/ui-components';
 import { generateStripeConnectUrl } from '../services/stripeConnect';
 // get current session import
 
-
 import config from '@/amplifyconfiguration.json';
 Amplify.configure(config, { ssr: true });
 
@@ -28,6 +27,7 @@ const DashboardPage = () => {
   }>>([]);
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const router = useRouter();
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     const fetchSellerData = async () => {
@@ -47,14 +47,21 @@ const DashboardPage = () => {
 
   const fetchProducts = async (user: any) => {
     try {
-      const { data: products } = await client.models.Product.list({
+      const response = await client.models.Product.list({
         filter: { owner: { eq: user.username } },
         limit: 100,
       });
-      setProducts(products.map((product: any) => ({
-        ...product,
-        name: product.name || '',
-      })));
+      const products = response.data ? response.data : []; // Ensure products is always an array
+      // Proceed with setting the products state
+      if (Array.isArray(products)) {
+        setProducts(products.map((product: any) => ({
+          ...product,
+          name: product.name || '',
+        })));
+      } else {
+        console.error('Expected products to be an array, but got:', products);
+        setProducts([]); // Fallback to an empty array
+      }
     } catch (error) {
       console.error('Error fetching products:', error);
     }
@@ -65,6 +72,8 @@ const DashboardPage = () => {
     // Refresh the product list after successful creation
     const user = await getCurrentUser();
     await fetchProducts(user);
+    setRefreshKey(oldKey => oldKey + 1); // Increment refreshKey to force re-fetch
+    //window.location.reload(); // Refresh the page after adding a product
   };
 
   const handleProductCreateError = async (fields: any, errorMessage: string) => {
@@ -123,7 +132,7 @@ const DashboardPage = () => {
     };
 
     fetchUserDataAndProducts();
-  }, []);
+  }, [refreshKey]);
 
   return (
     <Authenticator>

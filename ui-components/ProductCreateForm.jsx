@@ -29,6 +29,12 @@ export default function ProductCreateForm(props) {
   const [owner, setOwner] = React.useState(initialValues.owner);
   const [errors, setErrors] = React.useState({});
 
+  // Add the updateOwnerState function here
+  const updateOwnerState = async () => {
+    const user = await getCurrentUser();
+    setOwner(user.username);
+  };
+
   React.useEffect(() => {
     const fetchUser = async () => {
       const user = await getCurrentUser();
@@ -68,11 +74,14 @@ export default function ProductCreateForm(props) {
     <form
       onSubmit={async (event) => {
         event.preventDefault();
+        const currentUser = await getCurrentUser();
+        const currentOwner = currentUser.username; // Assuming getCurrentUser() returns an object with a username property
+
         let modelFields = {
           name,
           description,
           price,
-          owner,
+          owner: currentOwner,
         };
         const validationResponses = await Promise.all(
           Object.keys(validations).reduce((promises, fieldName) => {
@@ -116,6 +125,7 @@ export default function ProductCreateForm(props) {
             onError(modelFields, messages);
           }
         }
+        //window.location.reload();
       }}
       {...rest}
     >
