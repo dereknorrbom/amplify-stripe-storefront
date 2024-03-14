@@ -62,8 +62,6 @@ The application integrates with Stripe for payment processing and seller onboard
 
 - **Seller Payouts:** The application transfers funds from the buyer to the seller's connected Stripe account to support seller payouts. The `createCheckoutSession` Lambda function configures the necessary settings to split the payment between the platform and the seller, applying a platform fee of 10%.
 
-...
-
 ## GraphQL Schema
 
 The application uses GraphQL to define the schema for the data models and their relationships. The main data models are:
