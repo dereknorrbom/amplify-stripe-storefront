@@ -1,3 +1,4 @@
+// /app/login/page.tsx
 "use client";
 import { Amplify } from 'aws-amplify';
 import { getCurrentUser, fetchAuthSession } from 'aws-amplify/auth';
@@ -12,7 +13,7 @@ import { generateStripeConnectUrl } from '../services/stripeConnect';
 
 
 import config from '@/amplifyconfiguration.json';
-Amplify.configure(config);
+Amplify.configure(config, { ssr: true });
 
 const client = generateClient<Schema>();
 
@@ -105,6 +106,7 @@ const DashboardPage = () => {
   const handleStripeConnect = async () => {
     try {
       const user = await getCurrentUser();
+      console.log('UserName:', user.username);
       const stripeConnectUrl = await generateStripeConnectUrl();
       window.location.href = `${stripeConnectUrl}&state=${user.username}`;
     } catch (error) {

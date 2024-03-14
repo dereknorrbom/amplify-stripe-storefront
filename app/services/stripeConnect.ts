@@ -1,4 +1,4 @@
-// lib/stripeConnect.ts
+// services/stripeConnect.ts
 export const generateStripeConnectUrl = async () => {
     const response = await fetch(process.env.NEXT_PUBLIC_GENERATE_STRIPE_CONNECT_URL!);
     const { stripeConnectUrl } = await response.json();
