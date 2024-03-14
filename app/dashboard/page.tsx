@@ -223,7 +223,7 @@ const DashboardPage = () => {
                       <div>
                         <span className="mr-2 font-bold">Name:</span><span>{product.name}</span>
                         <span className="ml-4 mr-2 font-bold">Description:</span><span>{product.description}</span>
-                        <span className="ml-4 mr-2 font-bold">Price:</span><span>${product.price}</span>
+                        <span className="ml-4 mr-2 font-bold">Price:</span><span>${(product.price / 100).toFixed(2)}</span>
                         <button
                           onClick={() => setEditingProductId(product.id)}
                           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded mr-2"

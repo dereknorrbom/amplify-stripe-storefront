@@ -29,12 +29,6 @@ export default function ProductCreateForm(props) {
   const [owner, setOwner] = React.useState(initialValues.owner);
   const [errors, setErrors] = React.useState({});
 
-  // Add the updateOwnerState function here
-  const updateOwnerState = async () => {
-    const user = await getCurrentUser();
-    setOwner(user.username);
-  };
-
   React.useEffect(() => {
     const fetchUser = async () => {
       const user = await getCurrentUser();
@@ -77,12 +71,24 @@ export default function ProductCreateForm(props) {
         const currentUser = await getCurrentUser();
         const currentOwner = currentUser.username; // Assuming getCurrentUser() returns an object with a username property
 
+        // Ensure price is treated as a number before conversion
+        const numericPrice = parseFloat(price);
+        if (isNaN(numericPrice)) {
+          console.error('Price is not a valid number:', price);
+          // Consider adding user feedback here to correct the price input
+          return;
+        }
+
         let modelFields = {
           name,
           description,
-          price,
+          price: Math.round(numericPrice * 100), // Convert price to integer (cents)
           owner: currentOwner,
         };
+
+        // Debugging: Log the modelFields to verify the price conversion
+        console.log('Submitting product with fields:', modelFields);
+
         const validationResponses = await Promise.all(
           Object.keys(validations).reduce((promises, fieldName) => {
             if (Array.isArray(modelFields[fieldName])) {
@@ -125,7 +131,6 @@ export default function ProductCreateForm(props) {
             onError(modelFields, messages);
           }
         }
-        //window.location.reload();
       }}
       {...rest}
     >
@@ -142,7 +147,7 @@ export default function ProductCreateForm(props) {
               const modelFields = {
                 name: value,
                 description,
-                price,
+                price: Math.round(price * 100),
                 owner,
               };
               const result = onChange(modelFields);
@@ -205,7 +210,7 @@ export default function ProductCreateForm(props) {
               const modelFields = {
                 name,
                 description,
-                price: value,
+                price: Math.round(price * 100),
                 owner,
               };
               const result = onChange(modelFields);

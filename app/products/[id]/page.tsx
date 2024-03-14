@@ -101,7 +101,7 @@ export default function ProductDetail() {
             <h1 className="text-3xl font-bold mb-4 text-gray-800">{product.name}</h1>
             <p className="text-gray-600 mb-8">{product.description}</p>
             <div className="mb-8">
-              <span className="text-4xl font-bold text-gray-800">${product.price.toFixed(2)}</span>
+              <span className="text-4xl font-bold text-gray-800">${(product.price / 100).toFixed(2)}</span>
             </div>
             <button
               onClick={handlePurchase}

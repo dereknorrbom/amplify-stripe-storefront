@@ -47,7 +47,7 @@ export default function Home() {
                 <h2 className="text-xl font-semibold mb-2 text-gray-800">{product.name}</h2>
                 <p className="text-gray-600 mb-4">{product.description}</p>
                 <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold text-gray-800">${product.price.toFixed(2)}</span>
+                  <span className="text-2xl font-bold text-gray-800">${(product.price / 100).toFixed(2)}</span>
                   <Link href={`/products/${product.id}`}>
                     <button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                       Purchase
