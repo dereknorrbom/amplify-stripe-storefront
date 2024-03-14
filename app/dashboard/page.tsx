@@ -26,6 +26,7 @@ const DashboardPage = () => {
     owner: string;
   }>>([]);
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
+  const [editingPrice, setEditingPrice] = useState('');
   const router = useRouter();
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -57,6 +58,7 @@ const DashboardPage = () => {
         setProducts(products.map((product: any) => ({
           ...product,
           name: product.name || '',
+          price: product.price, // Keep price as is, no conversion here
         })));
       } else {
         console.error('Expected products to be an array, but got:', products);
@@ -97,14 +99,17 @@ const DashboardPage = () => {
 
   const updateProduct = async (productId: string, updatedFields: any) => {
     try {
+      // Ensure the price is already an integer representing cents
       await client.models.Product.update({
         id: productId,
         ...updatedFields,
+        price: Math.round(parseFloat(updatedFields.price)), // Convert the price from a string to an integer representing cents
       });
       // Refresh the product list after successful update
       const user = await getCurrentUser();
       await fetchProducts(user);
       setEditingProductId(null);
+      setEditingPrice(''); // Reset editing price
     } catch (error) {
       console.error('Error updating product:', error);
       // Display an error message to the user
@@ -143,104 +148,125 @@ const DashboardPage = () => {
 
         return (
           <div className="container mx-auto px-4 py-8">
-            <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
-            <div className="mb-8">
-              <h2 className="text-xl font-bold mb-2">Stripe Connect</h2>
-              {stripeId ? (
-                <p>Stripe account connected: {stripeId}</p>
-              ) : (
-                <button
-                  onClick={handleStripeConnect}
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                >
-                  Connect Stripe
-                </button>
-              )}
-            </div>            <div className="mb-8">
-              <h2 className="text-xl font-bold mb-2">Add Product</h2>
-              <ProductCreateForm
-                onSuccess={handleProductCreated}
-                onError={handleProductCreateError}
-              />
-            </div>
-            <div className="mb-8">
-              <h2 className="text-xl font-bold mb-2">Products</h2>
-              <ul>
-                {products.map((product) => (
-                  <li key={product.id} className="mb-4">
-                    {editingProductId === product.id ? (
-                      <div>
-                        <input
-                          type="text"
-                          value={product.name}
-                          onChange={(e) =>
-                            setProducts((prevProducts) =>
-                              prevProducts.map((p) =>
-                                p.id === product.id ? { ...p, name: e.target.value } : p
+            <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
+            <div className="mb-10">
+              <h2 className="text-xl font-semibold mb-3">Stripe Connect</h2>
+              <div className="p-4 border border-gray-300 rounded-lg mb-6">
+                {stripeId ? (
+                  <p className="text-lg">Stripe account connected: <span className="font-semibold">{stripeId}</span></p>
+                ) : (
+                  <button
+                    onClick={handleStripeConnect}
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                  >
+                    Connect Stripe
+                  </button>
+                )}
+              </div>
+              <div className="mb-10">
+                <h2 className="text-xl font-semibold mb-3">Add Product</h2>
+                <div className="p-4 border border-gray-300 rounded-lg">
+                  <ProductCreateForm
+                    onSuccess={handleProductCreated}
+                    onError={handleProductCreateError}
+                  />
+                </div>
+              </div>
+              <div className="mb-10">
+                <h2 className="text-xl font-semibold mb-3">Products</h2>
+                <ul className="space-y-4">
+                  {products.map((product) => (
+                    <li key={product.id} className="p-4 border border-gray-300 rounded-lg">
+                      {editingProductId === product.id ? (
+                        <div className="flex items-center space-x-3">
+                          <input
+                            type="text"
+                            value={product.name}
+                            onChange={(e) =>
+                              setProducts((prevProducts) =>
+                                prevProducts.map((p) =>
+                                  p.id === product.id ? { ...p, name: e.target.value } : p
+                                )
                               )
-                            )
-                          }
-                          className="border border-gray-300 rounded px-2 py-1 mr-2"
-                        />
-                        <input
-                          type="text"
-                          value={product.description}
-                          onChange={(e) =>
-                            setProducts((prevProducts) =>
-                              prevProducts.map((p) =>
-                                p.id === product.id ? { ...p, description: e.target.value } : p
+                            }
+                            className="border border-gray-300 rounded px-2 py-1 flex-1"
+                          />
+                          <input
+                            type="text"
+                            value={product.description}
+                            onChange={(e) =>
+                              setProducts((prevProducts) =>
+                                prevProducts.map((p) =>
+                                  p.id === product.id ? { ...p, description: e.target.value } : p
+                                )
                               )
-                            )
-                          }
-                          className="border border-gray-300 rounded px-2 py-1 mr-2"
-                        />
-                        <input
-                          type="number"
-                          value={product.price}
-                          onChange={(e) =>
-                            setProducts((prevProducts) =>
-                              prevProducts.map((p) =>
-                                p.id === product.id ? { ...p, price: Number(e.target.value) } : p
-                              )
-                            )
-                          }
-                          className="border border-gray-300 rounded px-2 py-1 mr-2"
-                        />
-                        <button
-                          onClick={() => updateProduct(product.id, product)}
-                          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded mr-2"
-                        >
-                          Save
-                        </button>
-                        <button
-                          onClick={() => setEditingProductId(null)}
-                          className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1 px-2 rounded"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    ) : (
-                      <div>
-                        <span className="mr-2 font-bold">Name:</span><span>{product.name}</span>
-                        <span className="ml-4 mr-2 font-bold">Description:</span><span>{product.description}</span>
-                        <span className="ml-4 mr-2 font-bold">Price:</span><span>${(product.price / 100).toFixed(2)}</span>
-                        <button
-                          onClick={() => setEditingProductId(product.id)}
-                          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded mr-2"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => deleteProduct(product.id)}
-                          className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    )}
-                  </li>
-                ))}
-              </ul>
+                            }
+                            className="border border-gray-300 rounded px-2 py-1 flex-1"
+                          />
+                          <input
+                            type="text"
+                            value={editingProductId === product.id ? editingPrice : ''}
+                            onChange={(e) => setEditingPrice(e.target.value)}
+                            className="border border-gray-300 rounded px-2 py-1 w-24"
+                          />
+                          <button
+                            onClick={() => {
+                              updateProduct(product.id, {
+                                name: product.name,
+                                description: product.description,
+                                price: parseFloat(editingPrice) * 100,
+                              });
+                              setEditingProductId(null);
+                              setEditingPrice(''); // Reset editing price
+                            }}
+                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+                          >
+                            Save
+                          </button>
+                          <button
+                            onClick={() => {
+                              setEditingProductId(null);
+                              setEditingPrice(''); // Reset editing price
+                            }}
+                            className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1 px-2 rounded"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <span className="font-semibold">Name:</span> {product.name}
+                          </div>
+                          <div>
+                            <span className="font-semibold">Description:</span> {product.description}
+                          </div>
+                          <div>
+                            <span className="font-semibold">Price:</span> ${(product.price / 100).toFixed(2)}
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <button
+                              onClick={() => {
+                                setEditingProductId(product.id);
+                                setEditingPrice((product.price / 100).toFixed(2));
+                              }}
+                              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => deleteProduct(product.id)}
+                              className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
             <button onClick={signOut} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
               Sign out
