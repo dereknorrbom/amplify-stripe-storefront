@@ -1,7 +1,6 @@
 "use client";
 import { Inter } from "next/font/google";
 import Navbar from "./components/Navbar";
-import useAmplifyConfig from '@/app/hooks/useAmplifyConfig';
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -11,7 +10,6 @@ const RootLayout = ({
 }: {
   children: React.ReactNode;
 }) => {
-  useAmplifyConfig();
   return (
     <>
       <html lang="en">

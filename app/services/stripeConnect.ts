@@ -1,5 +1,24 @@
 // services/stripeConnect.ts
 import { post } from 'aws-amplify/api';
+import { Amplify } from 'aws-amplify';
+import config from '@/amplifyconfiguration.json';
+Amplify.configure(config); // <=== Initialize Amplify with the exports config
+const existingConfig = Amplify.getConfig(); // <=== the initialized config should now be returned to existingConfig
+
+Amplify.configure({
+    ...existingConfig,
+    API: {
+        ...existingConfig.API,
+        REST: {
+        [config.custom.apiName]: {
+            endpoint: config.custom.apiEndpoint,
+            region: config.custom.apiRegion,
+        },
+        },
+    },
+}, { ssr: true });
+
+console.log('apiName stripe-connect: ', config.custom.apiName);
 
 export const generateStripeConnectUrl = async () => {
     try {

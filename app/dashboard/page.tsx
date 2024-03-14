@@ -29,7 +29,12 @@ Amplify.configure({
   },
 }, { ssr: true });
 
+console.log('apiName: ', config.custom.apiName);
+
 const client = generateClient<Schema>();
+
+console.log('client: ', client);
+console.log('apiName: ', config.custom.apiName);
 
 const existingConfigTwo = Amplify.getConfig();
 
