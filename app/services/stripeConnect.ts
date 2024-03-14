@@ -1,33 +1,21 @@
 // services/stripeConnect.ts
-import { post } from 'aws-amplify/api';
-import { Amplify } from 'aws-amplify';
-import config from '@/amplifyconfiguration.json';
-Amplify.configure(config); // <=== Initialize Amplify with the exports config
-const existingConfig = Amplify.getConfig(); // <=== the initialized config should now be returned to existingConfig
-
-Amplify.configure({
-    ...existingConfig,
-    API: {
-        ...existingConfig.API,
-        REST: {
-        [config.custom.apiName]: {
-            endpoint: config.custom.apiEndpoint,
-            region: config.custom.apiRegion,
-        },
-        },
-    },
-}, { ssr: true });
-
-console.log('apiName stripe-connect: ', config.custom.apiName);
+const GENERATE_STRIPE_CONNECT_URL_LAMBDA = process.env.NEXT_PUBLIC_GENERATE_STRIPE_CONNECT_URL!;
+const RETRIEVE_STRIPE_ACCOUNT_ID_LAMBDA = process.env.NEXT_PUBLIC_RETRIEVE_STRIPE_ACCOUNT_ID_URL!;
 
 export const generateStripeConnectUrl = async () => {
     try {
-        const operation = await post({
-        apiName: 'store-api',
-        path: '/api/generateStripeConnectUrl',
+        const response = await fetch(GENERATE_STRIPE_CONNECT_URL_LAMBDA, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
         });
-        const responseData = await operation.response;
-        const json = (await responseData.body.json()) as {stripeConnectUrl: string};
+
+        if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const json = await response.json();
         return json.stripeConnectUrl;
     } catch (error) {
         console.error('Error generating Stripe Connect URL:', error);
@@ -37,18 +25,19 @@ export const generateStripeConnectUrl = async () => {
 
 export const retrieveStripeAccountId = async (code: string) => {
     try {
-        const operation = await post({
-        apiName: 'store-api',
-        path: '/api/retrieveStripeAccountId',
-        options: {
-            headers: {
+        const response = await fetch(RETRIEVE_STRIPE_ACCOUNT_ID_LAMBDA, {
+        method: 'POST',
+        headers: {
             'Content-Type': 'application/json',
-            },
-            body: { code },
         },
+        body: JSON.stringify({ code }),
         });
-        const responseData = await operation.response;
-        const json = (await responseData.body.json()) as {stripeAccountId: string};
+
+        if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const json = await response.json();
         return json.stripeAccountId;
     } catch (error) {
         console.error('Error retrieving Stripe account ID:', error);
