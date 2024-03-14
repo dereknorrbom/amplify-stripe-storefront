@@ -8,7 +8,7 @@ import { useParams } from 'next/navigation';
 import { loadStripe } from '@stripe/stripe-js';
 
 import config from '@/amplifyconfiguration.json';
-Amplify.configure(config);
+Amplify.configure(config, { ssr: true });
 
 const client = generateClient<Schema>();
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);

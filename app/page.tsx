@@ -6,7 +6,7 @@ import { type Schema } from "@/amplify/data/resource";
 import Link from 'next/link';
 
 import config from '@/amplifyconfiguration.json';
-Amplify.configure(config);
+Amplify.configure(config, { ssr: true });
 
 const client = generateClient<Schema>()
 

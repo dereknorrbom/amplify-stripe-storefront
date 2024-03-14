@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
 import config from '@/amplifyconfiguration.json';
-Amplify.configure(config);
+Amplify.configure(config, { ssr: true });
 
 type User = {
   signInDetails: {
@@ -15,9 +15,15 @@ type User = {
   };
 };
 
-export default function LoginPage() {
+function UserHandler({ user: authUser, signOut }: { user: User | null, signOut: () => void }) {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    if (authUser) {
+      setUser(authUser as User);
+    }
+  }, [authUser]);
 
   useEffect(() => {
     if (user) {
@@ -26,18 +32,21 @@ export default function LoginPage() {
   }, [user, router]);
 
   return (
+    <>
+      <main>
+        
+        <button onClick={signOut}>Sign out</button>
+      </main>
+    </>
+  );
+}
+
+export default function LoginPage() {
+  return (
     <Authenticator>
-      {({ signOut, user: authUser }) => {
-        setUser(authUser as User); // Cast authUser to the custom User type
-        return (
-          <>
-            <main>
-              <h1>Hello {user?.signInDetails.loginId}</h1>
-              <button onClick={signOut}>Sign out</button>
-            </main>
-          </>
-        );
-      }}
+      {({ signOut, user: authUser }) => (
+        <UserHandler user={authUser as User | null} signOut={() => signOut && signOut()} />
+      )}
     </Authenticator>
   );
 }
