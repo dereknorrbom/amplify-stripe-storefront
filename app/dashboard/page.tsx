@@ -31,6 +31,10 @@ Amplify.configure({
 
 const client = generateClient<Schema>();
 
+const existingConfigTwo = Amplify.getConfig();
+
+console.log('existingConfigAPI: ', existingConfigTwo.API?.REST);
+
 const DashboardPage = () => {
   const [stripeId, setStripeId] = useState('');
   const [products, setProducts] = useState<Array<{
