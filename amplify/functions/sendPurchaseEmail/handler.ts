@@ -20,7 +20,7 @@ export const handler: Handler = async (event) => {
 
           Product Details:
           Name: ${productName}
-          Price: $${productPrice}
+          Price: $${paymentAmount}
 
           Payment Details:
           Payment Amount: $${paymentAmount}

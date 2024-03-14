@@ -58,7 +58,7 @@ export default function PurchaseSuccessPage() {
         <div className="mb-4">
           <p className="text-lg font-semibold">Product Details:</p>
           <p>Name: {purchaseDetails.productName}</p>
-          <p>Price: ${purchaseDetails.productPrice}</p>
+          <p>Price: ${purchaseDetails.paymentAmount}</p>
         </div>
         <div className="mb-4">
           <p className="text-lg font-semibold">Payment Details:</p>
