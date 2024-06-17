@@ -1,4 +1,4 @@
-# Revv Stripe Storefront
+# Amplify Stripe Storefront
 
 This project is an e-commerce application built with AWS Amplify, Next.js, Stripe, and GraphQL. It provides a platform for sellers to connect their Stripe accounts, create and manage products, and receive payments from buyers. The application leverages various AWS services, including Lambda functions, API Gateway, and DynamoDB, to handle server-side logic and data storage.
 
